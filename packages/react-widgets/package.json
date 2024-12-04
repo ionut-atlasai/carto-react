@@ -1,6 +1,6 @@
 {
-  "name": "@carto/react-widgets",
-  "version": "2.5.4",
+  "name": "react-carto-widgets-mod",
+  "version": "2.5.6",
   "description": "CARTO for React - Widgets",
   "author": "CARTO Dev Team",
   "keywords": [

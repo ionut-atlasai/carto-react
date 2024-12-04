@@ -23,6 +23,7 @@ const EMPTY_ARRAY = [];
  * @param  {string} props.id - ID for the widget instance.
  * @param  {string} props.title - Title to show in the widget header.
  * @param  {string} props.dataSource - ID of the data source to get the data from.
+ * @param  {string} props.customData - custom data to bypass the datasource fetch mechanism.
  * @param  {string} props.column - Name of the data source's column to get the data from.
  * @param  {number=} props.min - Min value of the indicated column.
  * @param  {number=} props.max - Max value of the indicated column.
@@ -47,6 +48,7 @@ function HistogramWidget({
   id,
   title,
   dataSource,
+  customData,
   column,
   operation,
   ticks: _ticks = [],
@@ -107,7 +109,7 @@ function HistogramWidget({
   }, [min, max, _ticks, bins, hasExternalMinMax]);
 
   let {
-    data = EMPTY_ARRAY,
+    data = EMPTY_ARRAY || customData,
     isLoading,
     warning = _warning,
     remoteCalculation
@@ -124,6 +126,11 @@ function HistogramWidget({
     enabled: !!ticks.length,
     attemptRemoteCalculation: _hasFeatureFlag(_FeatureFlags.REMOTE_WIDGETS)
   });
+
+  if (Array.isArray(customData) && customData.length > 0) {
+    data = customData;
+    isLoading = false;
+  }
 
   const thresholdsFromFilters = useWidgetFilterValues({
     dataSource,
@@ -181,7 +188,7 @@ function HistogramWidget({
   return (
     <WrapperWidgetUI title={title} {...wrapperProps} isLoading={isLoading}>
       <WidgetWithAlert
-        dataSource={dataSource}
+        dataSource={dataSource || customData}
         warning={warning}
         global={global}
         droppingFeaturesAlertProps={droppingFeaturesAlertProps}
@@ -190,7 +197,7 @@ function HistogramWidget({
       >
         {(!!data.length || isLoading) && (
           <HistogramWidgetUI
-            data={data}
+            data={data || customData}
             min={min}
             max={max}
             ticks={ticks}
